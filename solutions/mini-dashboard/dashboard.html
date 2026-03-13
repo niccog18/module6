@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<!--
+  L6 — Mini Dashboard: HTML Frontend  (Solution)
+  ================================================
+  Requires the FastAPI backend to be running:
+    uvicorn mini_api:app --reload --port 8000
+
+  Demonstrates:
+    • fetch() + async/await to call a local REST API
+    • POST with JSON body (Content-Type header required)
+    • Updating the DOM after each fetch (no page reload needed)
+    • Loading states and error handling
+    • Stats bar that recomputes from fresh data
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      padding: 2rem 1rem;
+    }
+
+    h1 { text-align: center; color: #1a1a2e; margin-bottom: 0.25rem; }
+    .api-note { text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 1.5rem; }
+
+    /* Stats bar */
+    .stats {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: #1a1a2e;
+      color: #fff;
+      border-radius: 10px;
+      padding: 1rem 2rem;
+      text-align: center;
+      min-width: 110px;
+    }
+    .stat-card .value { font-size: 2rem; font-weight: 700; }
+    .stat-card .label { font-size: 0.8rem; color: #aaa; margin-top: 0.25rem; }
+    .stat-card.done   { background: #27ae60; }
+    .stat-card.pending { background: #e94560; }
+
+    /* Main panel */
+    .panel {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Add task form */
+    .add-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .add-form input {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    .add-form input:focus { border-color: #1a1a2e; outline: none; }
+
+    button {
+      padding: 0.65rem 1.1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background-color 0.2s;
+    }
+    .btn-primary { background: #1a1a2e; color: #fff; }
+    .btn-primary:hover { background: #0f3460; }
+    .btn-refresh { background: #e94560; color: #fff; }
+    .btn-refresh:hover { background: #c73652; }
+    .btn-complete { background: #27ae60; color: #fff; padding: 0.35rem 0.75rem; font-size: 0.85rem; }
+    .btn-complete:hover { background: #219150; }
+
+    /* Task list */
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .timestamp { font-size: 0.8rem; color: #888; }
+
+    .task-list { list-style: none; }
+    .task-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .task-item.done .task-title { text-decoration: line-through; color: #aaa; }
+    .done-badge {
+      background: #eafaf1;
+      color: #27ae60;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .error { color: #c0392b; text-align: center; margin-top: 1rem; }
+    .loading { text-align: center; color: #888; font-style: italic; }
+  </style>
+</head>
+<body>
+
+  <h1>Task Dashboard</h1>
+  <p class="api-note">Powered by FastAPI · <code>http://localhost:8000</code></p>
+
+  <!-- Stats bar -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="value" id="stat-total">–</div>
+      <div class="label">Total</div>
+    </div>
+    <div class="stat-card done">
+      <div class="value" id="stat-done">–</div>
+      <div class="label">Done</div>
+    </div>
+    <div class="stat-card pending">
+      <div class="value" id="stat-pending">–</div>
+      <div class="label">Pending</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <!-- Add task form -->
+    <form class="add-form" id="add-form">
+      <input
+        type="text"
+        id="new-task-input"
+        placeholder="Add a new task…"
+        required
+      />
+      <button type="submit" class="btn-primary">Add Task</button>
+    </form>
+
+    <!-- Task list header -->
+    <div class="toolbar">
+      <strong>Tasks</strong>
+      <button class="btn-refresh" id="refresh-btn">↻ Refresh</button>
+    </div>
+    <p class="timestamp" id="timestamp"></p>
+
+    <div id="status" class="loading">Loading…</div>
+    <ul class="task-list" id="task-list"></ul>
+    <div id="error-msg" class="error"></div>
+  </div>
+
+  <script>
+    const API = "http://localhost:8000";
+
+    // ── DOM references ────────────────────────────────────────────────
+    const statTotal   = document.querySelector('#stat-total');
+    const statDone    = document.querySelector('#stat-done');
+    const statPending = document.querySelector('#stat-pending');
+    const taskList    = document.querySelector('#task-list');
+    const statusDiv   = document.querySelector('#status');
+    const errorMsg    = document.querySelector('#error-msg');
+    const timestamp   = document.querySelector('#timestamp');
+    const addForm     = document.querySelector('#add-form');
+    const newTaskInput = document.querySelector('#new-task-input');
+    const refreshBtn  = document.querySelector('#refresh-btn');
+
+    // ── fetchTasks() ──────────────────────────────────────────────────
+    /*
+      The fetch → update DOM pattern:
+        1. Call the API with fetch()
+        2. Check response.ok; throw if not 2xx
+        3. Parse response.json()
+        4. Build DOM elements from the data
+        5. Update stats at the same time
+
+      This function is called on page load AND when the user clicks Refresh
+      or adds/completes a task — always showing the freshest server state.
+    */
+    async function fetchTasks() {
+      statusDiv.textContent = "Loading…";
+      statusDiv.style.display = "block";
+      errorMsg.textContent = "";
+      taskList.innerHTML = "";
+
+      try {
+        const response = await fetch(`${API}/tasks`);
+
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status}`);
+        }
+
+        const tasks = await response.json();
+
+        statusDiv.style.display = "none";
+        renderTasks(tasks);
+        updateStats(tasks);
+
+        // Record when we last fetched
+        timestamp.textContent = `Last fetched: ${new Date().toLocaleTimeString()}`;
+
+      } catch (err) {
+        statusDiv.style.display = "none";
+        /*
+          Common cause: the FastAPI server isn't running.
+          "Failed to fetch" usually means CORS blocked or server is offline.
+        */
+        errorMsg.textContent = `Could not connect to the API. Is the FastAPI server running? (${err.message})`;
+      }
+    }
+
+    // ── renderTasks(tasks) ────────────────────────────────────────────
+    function renderTasks(tasks) {
+      taskList.innerHTML = "";
+
+      if (tasks.length === 0) {
+        taskList.innerHTML = '<li style="color:#888; padding:1rem; text-align:center;">No tasks yet — add one above!</li>';
+        return;
+      }
+
+      tasks.forEach(function (task) {
+        const li = document.createElement("li");
+        li.className = `task-item ${task.done ? "done" : ""}`;
+
+        if (task.done) {
+          li.innerHTML = `
+            <span class="task-title">${task.title}</span>
+            <span class="done-badge">✓ Done</span>
+          `;
+        } else {
+          li.innerHTML = `
+            <span class="task-title">${task.title}</span>
+            <button class="btn-complete" data-id="${task.id}">Mark Done</button>
+          `;
+          // Attach complete handler via event delegation using data-id attribute
+          li.querySelector('.btn-complete').addEventListener('click', function () {
+            completeTask(task.id);
+          });
+        }
+
+        taskList.appendChild(li);
+      });
+    }
+
+    // ── updateStats(tasks) ────────────────────────────────────────────
+    function updateStats(tasks) {
+      const done    = tasks.filter(t => t.done).length;
+      const pending = tasks.length - done;
+      statTotal.textContent   = tasks.length;
+      statDone.textContent    = done;
+      statPending.textContent = pending;
+    }
+
+    // ── completeTask(id) ──────────────────────────────────────────────
+    async function completeTask(id) {
+      try {
+        // PATCH request with an empty body — the route just needs the ID from the URL
+        const response = await fetch(`${API}/tasks/${id}/complete`, {
+          method: "PATCH",
+        });
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        // Refresh the list so the UI reflects the change
+        await fetchTasks();
+      } catch (err) {
+        errorMsg.textContent = `Could not complete task: ${err.message}`;
+      }
+    }
+
+    // ── Add task form submission ───────────────────────────────────────
+    addForm.addEventListener("submit", async function (event) {
+      /*
+        event.preventDefault() stops the form from doing its default
+        behaviour (navigating to a new page / reloading the current one).
+        We handle the submission ourselves with fetch.
+      */
+      event.preventDefault();
+      const title = newTaskInput.value.trim();
+      if (!title) return;
+
+      try {
+        // POST with a JSON body: must set Content-Type header
+        const response = await fetch(`${API}/tasks`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title }),
+        });
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+
+        newTaskInput.value = "";  // clear the input
+        await fetchTasks();        // refresh the list
+      } catch (err) {
+        errorMsg.textContent = `Could not add task: ${err.message}`;
+      }
+    });
+
+    // ── Refresh button ────────────────────────────────────────────────
+    refreshBtn.addEventListener("click", fetchTasks);
+
+    // ── Initial load ──────────────────────────────────────────────────
+    fetchTasks();
+  </script>
+
+</body>
+</html>

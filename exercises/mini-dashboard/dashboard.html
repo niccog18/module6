@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+  L6 — Mini Dashboard: HTML Frontend  (STARTER)
+  ================================================
+  Requires the FastAPI backend running at http://localhost:8000
+  Start it with: uvicorn mini_api:app --reload --port 8000
+
+  Your goal: build a task management dashboard that communicates with the API.
+
+  Features to implement:
+    1. Stats bar — total / done / pending task counts
+    2. Task list — loaded via fetch(GET /tasks) on page load
+    3. Add task form — POST /tasks with a JSON body
+    4. "Mark Done" button per task — PATCH /tasks/{id}/complete
+    5. Refresh button — re-fetch the task list
+    6. Last-fetched timestamp
+    7. Error message if the API is unreachable
+
+  Key patterns:
+    • fetch(url, { method, headers, body }) — for POST/PATCH requests
+    • JSON.stringify(obj) — convert a JS object to a JSON string for the body
+    • Always include "Content-Type": "application/json" on POST/PATCH
+    • After any mutation (add, complete), call fetchTasks() to refresh the UI
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Dashboard</title>
+  <style>
+    /* TODO: Add styles for stats bar, task list items, buttons, and error messages */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; padding: 2rem 1rem; }
+    h1 { text-align: center; margin-bottom: 1.5rem; }
+    .panel { max-width: 600px; margin: 0 auto; }
+    button { padding: 0.6rem 1rem; border: none; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h1>Task Dashboard</h1>
+
+  <!-- Stats bar: show total, done, pending counts -->
+  <div id="stats">
+    <p>Total: <span id="stat-total">–</span></p>
+    <p>Done: <span id="stat-done">–</span></p>
+    <p>Pending: <span id="stat-pending">–</span></p>
+  </div>
+
+  <div class="panel">
+    <!-- Add task form -->
+    <form id="add-form">
+      <input type="text" id="new-task-input" placeholder="Add a new task…" required />
+      <button type="submit">Add Task</button>
+    </form>
+
+    <!-- Refresh button and timestamp -->
+    <button id="refresh-btn">↻ Refresh</button>
+    <p id="timestamp"></p>
+
+    <!-- Status / error messages -->
+    <div id="status">Loading…</div>
+    <div id="error-msg" style="color: red;"></div>
+
+    <!-- Task list -->
+    <ul id="task-list"></ul>
+  </div>
+
+  <script>
+    const API = "http://localhost:8000";
+
+    // ── DOM references ─────────────────────────────────────────────────
+    const taskList     = document.querySelector('#task-list');
+    const statusDiv    = document.querySelector('#status');
+    const errorMsg     = document.querySelector('#error-msg');
+    const timestamp    = document.querySelector('#timestamp');
+    const addForm      = document.querySelector('#add-form');
+    const newTaskInput = document.querySelector('#new-task-input');
+    const refreshBtn   = document.querySelector('#refresh-btn');
+
+    // Stats elements
+    const statTotal    = document.querySelector('#stat-total');
+    const statDone     = document.querySelector('#stat-done');
+    const statPending  = document.querySelector('#stat-pending');
+
+    // ── fetchTasks() ───────────────────────────────────────────────────
+    // TODO: Implement this async function
+    // Steps:
+    //   1. Show a loading message in statusDiv
+    //   2. Fetch GET /tasks
+    //   3. Check response.ok — throw if not
+    //   4. Parse JSON → tasks array
+    //   5. Call renderTasks(tasks)
+    //   6. Call updateStats(tasks)
+    //   7. Update the timestamp
+    //   8. In catch: show error in errorMsg (hint: "Is the server running?")
+    async function fetchTasks() {
+      // TODO
+    }
+
+    // ── renderTasks(tasks) ──────────────────────────────────────────────
+    // TODO: Clear task-list, build one <li> per task
+    // For pending tasks: show title + "Mark Done" button
+    // For done tasks: show title with strikethrough
+    // Attach click listener on "Mark Done" to call completeTask(task.id)
+    function renderTasks(tasks) {
+      // TODO
+    }
+
+    // ── updateStats(tasks) ─────────────────────────────────────────────
+    // TODO: Count done vs pending; update statTotal, statDone, statPending
+    function updateStats(tasks) {
+      // TODO
+    }
+
+    // ── completeTask(id) ───────────────────────────────────────────────
+    // TODO: PATCH /tasks/{id}/complete then call fetchTasks()
+    // Remember: fetch(url, { method: "PATCH" })
+    async function completeTask(id) {
+      // TODO
+    }
+
+    // ── Add task form ──────────────────────────────────────────────────
+    // TODO: Prevent default, POST the new title as JSON, then fetchTasks()
+    // Remember:
+    //   method: "POST"
+    //   headers: { "Content-Type": "application/json" }
+    //   body: JSON.stringify({ title: inputValue })
+    addForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      // TODO
+    });
+
+    // ── Refresh button ─────────────────────────────────────────────────
+    refreshBtn.addEventListener("click", fetchTasks);
+
+    // ── Initial load ───────────────────────────────────────────────────
+    fetchTasks();
+  </script>
+
+</body>
+</html>
