@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--
+  L3 — Styled Portfolio  (HTML file)
+  ====================================
+  This file links to styles.css for all visual styling.
+  The structure is identical to the semantic portfolio from L2,
+  but class attributes have been added so CSS can target specific elements.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex Rivera — Portfolio</title>
+  <!-- Link to our external stylesheet (same directory) -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-content">
+      <h1>Alex Rivera</h1>
+      <p class="tagline">AI Engineering Student &amp; Aspiring Full-Stack Developer</p>
+      <nav class="main-nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content-wrapper">
+
+    <section id="about">
+      <h2>About Me</h2>
+      <p>
+        Hi! I'm Alex, a software developer transitioning into AI engineering.
+        I enjoy building tools that make everyday tasks easier and exploring
+        how machine learning can be applied to real-world problems.
+      </p>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <!-- The project-grid div creates the flexbox layout defined in styles.css -->
+      <div class="project-grid">
+
+        <article class="project-card">
+          <h3>AI Concept Explorer</h3>
+          <p class="project-module">Module 1 — AI Fundamentals</p>
+          <p>A Python script that queries the OpenAI API to explain core AI
+          concepts in plain English.</p>
+        </article>
+
+        <article class="project-card">
+          <h3>Data Pipeline Toolkit</h3>
+          <p class="project-module">Module 2 — Advanced Python &amp; Data Handling</p>
+          <p>Pandas-based utilities for reading, cleaning, and summarising CSV
+          datasets with a CLI interface.</p>
+        </article>
+
+        <article class="project-card">
+          <h3>Study Buddy Database</h3>
+          <p class="project-module">Module 3 — Databases &amp; SQL</p>
+          <p>A SQLite-backed study-session tracker with complex SQL queries
+          and weekly export summaries.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2>Skills</h2>
+      <ul>
+        <li>Python (pandas, requests, FastAPI, Streamlit)</li>
+        <li>SQL &amp; relational database design</li>
+        <li>REST API design and consumption</li>
+        <li>HTML5 &amp; CSS3</li>
+        <li>Git &amp; GitHub</li>
+      </ul>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>I'm open to collaboration, internships, and freelance projects.</p>
+      <ul>
+        <li>Email: <a href="mailto:alex.rivera@example.com">alex.rivera@example.com</a></li>
+        <li>GitHub: <a href="https://github.com/alexrivera-example" target="_blank" rel="noopener">github.com/alexrivera-example</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Alex Rivera. Built with semantic HTML5 &amp; CSS3.</p>
+  </footer>
+
+</body>
+</html>

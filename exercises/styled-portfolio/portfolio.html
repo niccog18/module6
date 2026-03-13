@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--
+  L3 — Styled Portfolio  (STARTER — HTML file)
+  ==============================================
+  Your goal: add CSS classes to this HTML file so that styles.css can
+  target the right elements.
+
+  Steps:
+  1. Open styles.css and read the class names defined there.
+  2. Add the matching class attributes to the elements below.
+     Example: change <header> to <header class="site-header">
+  3. Open portfolio.html in a browser and verify the styles apply.
+
+  Classes to assign (defined in styles.css):
+    .site-header      → the <header> element
+    .header-content   → the <div> inside <header>
+    .tagline          → the <p> below <h1>
+    .main-nav         → the <nav> element
+    .content-wrapper  → the <main> element
+    .project-grid     → the <div> wrapping all project <article>s
+    .project-card     → each <article>
+    .project-module   → the module-label <p> inside each card
+    .site-footer      → the <footer> element
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Name — Portfolio</title>
+  <!-- TODO: Link to styles.css with a <link> tag -->
+</head>
+<body>
+
+  <!-- TODO: Add class="site-header" -->
+  <header>
+    <!-- TODO: Wrap contents in a <div class="header-content"> -->
+    <h1>Your Name</h1>
+    <!-- TODO: Add class="tagline" -->
+    <p>Your Tagline Here</p>
+    <!-- TODO: Add class="main-nav" -->
+    <nav aria-label="Main navigation">
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <!-- TODO: close the <div class="header-content"> here -->
+  </header>
+
+  <!-- TODO: Add class="content-wrapper" -->
+  <main>
+
+    <section id="about">
+      <h2>About Me</h2>
+      <p>Write a short bio here.</p>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <!-- TODO: Wrap all <article>s in a <div class="project-grid"> -->
+
+        <!-- TODO: Add class="project-card" -->
+        <article>
+          <h3>Project One</h3>
+          <!-- TODO: Add class="project-module" -->
+          <p>Module 1 — AI Fundamentals</p>
+          <p>Describe your project here.</p>
+        </article>
+
+        <!-- TODO: Add class="project-card" -->
+        <article>
+          <h3>Project Two</h3>
+          <!-- TODO: Add class="project-module" -->
+          <p>Module 2 — Advanced Python</p>
+          <p>Describe your project here.</p>
+        </article>
+
+        <!-- TODO: Add class="project-card" -->
+        <article>
+          <h3>Project Three</h3>
+          <!-- TODO: Add class="project-module" -->
+          <p>Module 3 — Databases &amp; SQL</p>
+          <p>Describe your project here.</p>
+        </article>
+
+      <!-- TODO: close the <div class="project-grid"> here -->
+    </section>
+
+    <section id="skills">
+      <h2>Skills</h2>
+      <ul>
+        <li>Python</li>
+        <li>SQL</li>
+        <li>HTML &amp; CSS</li>
+        <li>Git</li>
+        <li>REST APIs</li>
+      </ul>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>Email: <a href="mailto:you@example.com">you@example.com</a></p>
+    </section>
+
+  </main>
+
+  <!-- TODO: Add class="site-footer" -->
+  <footer>
+    <p>&copy; 2026 Your Name.</p>
+  </footer>
+
+</body>
+</html>

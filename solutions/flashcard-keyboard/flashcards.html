@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--
+  L4b — Flashcard App with Keyboard Navigation  (Stretch Challenge)
+  ==================================================================
+  Extends the basic flashcard app with keyboard shortcuts:
+    → Right arrow  : next card
+    ← Left arrow   : previous card
+    Space bar      : toggle answer
+
+  New concept: document.addEventListener("keydown", handler)
+    • Unlike button clicks (which attach to one element), keydown fires on
+      the *document* — every key press, regardless of which element is focused.
+    • event.key contains the name of the key pressed ("ArrowRight", " ", etc.)
+    • event.preventDefault() stops the browser's built-in behaviour for that
+      key (e.g., Space would otherwise scroll the page down).
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Dev Flashcards (with Keyboard)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    h1 { font-size: 1.6rem; margin-bottom: 0.5rem; color: #e94560; }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: #16213e;
+      border: 2px solid #e94560;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .progress { font-size: 0.85rem; color: #aaa; margin-bottom: 1rem; }
+    .question { font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; line-height: 1.5; }
+
+    .answer {
+      font-size: 1rem;
+      background: #0f3460;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .btn-row { display: flex; gap: 1rem; justify-content: center; }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    #prev-btn { background: #0f3460; color: #fff; border: 1px solid #e94560; }
+    #prev-btn:hover { background: #1a4a80; }
+
+    #show-btn { background: #e94560; color: #fff; }
+    #show-btn:hover { background: #c73652; }
+
+    #next-btn { background: #0f3460; color: #fff; border: 1px solid #e94560; }
+    #next-btn:hover { background: #1a4a80; }
+  </style>
+</head>
+<body>
+
+  <h1>Web Dev Flashcards</h1>
+  <p class="hint">← → arrow keys to navigate · Space to toggle answer</p>
+
+  <div class="card">
+    <p class="progress" id="progress">Card 1 of 5</p>
+    <p class="question" id="question">Loading…</p>
+    <div class="answer" id="answer">Loading…</div>
+    <div class="btn-row">
+      <button id="prev-btn">← Prev</button>
+      <button id="show-btn">Show Answer</button>
+      <button id="next-btn">Next →</button>
+    </div>
+  </div>
+
+  <script>
+    const cards = [
+      {
+        question: "What are the four main HTTP methods and what does each one do?",
+        answer: "GET — retrieve data | POST — create a resource | PUT/PATCH — update a resource | DELETE — remove a resource"
+      },
+      {
+        question: "What is the difference between a class selector and an ID selector in CSS?",
+        answer: "A class selector (.name) can be applied to many elements. An ID selector (#name) must be unique per page and has higher specificity."
+      },
+      {
+        question: "What is the DOM and how does JavaScript interact with it?",
+        answer: "The DOM (Document Object Model) is a tree representation of the HTML page. JavaScript can read and modify it with querySelector(), textContent, and addEventListener()."
+      },
+      {
+        question: "What does an HTTP 200 status code mean? What about 404 and 500?",
+        answer: "200 = OK (success). 404 = Not Found (the resource doesn't exist). 500 = Internal Server Error (something went wrong on the server)."
+      },
+      {
+        question: "What is the difference between async/await and traditional callbacks?",
+        answer: "async/await lets you write asynchronous code that looks synchronous. It is built on Promises and makes error handling easier with try/catch, avoiding deeply nested 'callback hell'."
+      }
+    ];
+
+    let currentIndex = 0;
+    let answerVisible = false;
+
+    const progressEl = document.querySelector('#progress');
+    const questionEl = document.querySelector('#question');
+    const answerEl   = document.querySelector('#answer');
+    const showBtn    = document.querySelector('#show-btn');
+    const prevBtn    = document.querySelector('#prev-btn');
+    const nextBtn    = document.querySelector('#next-btn');
+
+    function renderCard() {
+      const card = cards[currentIndex];
+      progressEl.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
+      questionEl.textContent = card.question;
+      answerEl.textContent   = card.answer;
+      answerEl.style.display = answerVisible ? "block" : "none";
+      showBtn.textContent    = answerVisible ? "Hide Answer" : "Show Answer";
+    }
+
+    function goNext() {
+      currentIndex = (currentIndex + 1) % cards.length;
+      answerVisible = false;
+      renderCard();
+    }
+
+    function goPrev() {
+      /*
+        Previous-card logic uses the same modulo trick, but we must add
+        cards.length before taking the modulo to avoid negative indices.
+
+        Without the addition:   (0 - 1) % 5 = -1   ← invalid index!
+        With the addition:     (0 - 1 + 5) % 5 = 4 ← wraps to last card ✓
+      */
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      answerVisible = false;
+      renderCard();
+    }
+
+    function toggleAnswer() {
+      answerVisible = !answerVisible;
+      renderCard();
+    }
+
+    // ── Button click listeners ────────────────────────────────────────
+    showBtn.addEventListener("click", toggleAnswer);
+    nextBtn.addEventListener("click", goNext);
+    prevBtn.addEventListener("click", goPrev);
+
+    // ── Keyboard listener ────────────────────────────────────────────
+    /*
+      document.addEventListener("keydown", handler) — attaches to the
+      DOCUMENT (not a single element), so it fires for ANY key press
+      regardless of where focus is.
+
+      event.key values for common keys:
+        "ArrowRight" — right arrow
+        "ArrowLeft"  — left arrow
+        " "          — Space (note: a single space character)
+        "Enter"      — Enter key
+    */
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowRight") {
+        goNext();
+      } else if (event.key === "ArrowLeft") {
+        goPrev();
+      } else if (event.key === " ") {
+        /*
+          event.preventDefault() cancels the browser's default action.
+          Without this, pressing Space would scroll the page down,
+          which fights with our toggle behaviour.
+        */
+        event.preventDefault();
+        toggleAnswer();
+      }
+    });
+
+    renderCard();
+  </script>
+
+</body>
+</html>

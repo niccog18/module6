@@ -1,0 +1,182 @@
+/*
+  L3b — Responsive Portfolio  (Stretch Challenge)
+  =================================================
+  This file extends the styled-portfolio CSS with a responsive media query
+  so the project grid stacks vertically on small screens.
+
+  KEY CONCEPT — Responsive Design:
+  ──────────────────────────────────
+  Responsive design means your layout adapts to different screen sizes.
+  We use @media queries to apply CSS only when a condition is met.
+
+  Syntax:
+    @media (max-width: 600px) { ... }
+
+  This block runs ONLY when the viewport is 600px wide or narrower.
+  Rules inside it override earlier rules for that screen size.
+
+  How to test in Chrome DevTools:
+    1. Open the page in Chrome.
+    2. Press F12 (or Cmd+Option+I on Mac) to open DevTools.
+    3. Click the phone/tablet icon in the top-left of DevTools
+       (or press Ctrl+Shift+M / Cmd+Shift+M).
+    4. Drag the viewport edge to make it narrower than 600px.
+    5. Watch the grid collapse into a single column!
+*/
+
+/* ── CSS Custom Properties ──────────────────────────────────────────────── */
+:root {
+  --color-bg:      #f5f5f5;
+  --color-header:  #1a1a2e;
+  --color-accent:  #e94560;
+  --color-card-bg: #ffffff;
+  --color-text:    #333333;
+  --border-radius: 6px;
+  --max-width:     800px;
+}
+
+/* ── Base Styles (all screen sizes) ────────────────────────────────────── */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+h2 {
+  border-bottom: 2px solid var(--color-accent);
+  padding-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.site-header {
+  background-color: var(--color-header);
+  color: #ffffff;
+  padding: 2rem 1rem;
+}
+
+.header-content {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.site-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2rem;
+}
+
+.tagline {
+  margin: 0 0 1rem;
+  color: #cccccc;
+}
+
+.main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.main-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+}
+
+.main-nav a:hover {
+  background-color: var(--color-accent);
+}
+
+.content-wrapper {
+  max-width: var(--max-width);
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.project-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.project-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid #dddddd;
+  border-radius: var(--border-radius);
+  padding: 1.25rem;
+  flex: 1 1 220px;
+  max-width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.project-card h3 {
+  margin-top: 0;
+  color: var(--color-header);
+}
+
+.project-module {
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.site-footer {
+  background-color: var(--color-header);
+  color: #aaaaaa;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive Breakpoint ──────────────────────────────────────────────── */
+/*
+  @media (max-width: 600px) — rules inside this block ONLY apply when the
+  viewport width is 600 pixels or less (phones in portrait orientation).
+
+  What we change:
+    • flex-direction: column  → cards stack vertically instead of side by side
+    • flex: none              → cards take full width instead of sharing space
+
+  Everything NOT listed here keeps its default value from the rules above.
+*/
+@media (max-width: 600px) {
+
+  /* Stack project cards vertically on small screens */
+  .project-grid {
+    flex-direction: column;  /* override: row (default) → column */
+  }
+
+  /* Each card should take the full available width */
+  .project-card {
+    flex: none;     /* remove the flex-grow/shrink/basis */
+    width: 100%;    /* fill the column */
+  }
+
+  /* Slightly smaller heading on mobile */
+  .site-header h1 {
+    font-size: 1.5rem;
+  }
+}

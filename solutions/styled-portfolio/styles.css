@@ -1,0 +1,178 @@
+/*
+  L3 — Styled Portfolio  (CSS file)
+  ===================================
+  Key CSS concepts demonstrated:
+    • Element selectors   — target tags by name (body, h2, a)
+    • Class selectors     — target elements with a matching class (.project-card)
+    • Descendant selectors— target elements inside another (.main-nav a)
+    • Box model           — every element is a box: content + padding + border + margin
+    • Flexbox             — a layout system for rows/columns (.project-grid)
+    • CSS custom properties (variables) — reusable values (--color-*)
+*/
+
+/* ── CSS Custom Properties (Variables) ────────────────────────────────────── */
+/* Define once at the :root so any rule below can use them with var() */
+:root {
+  --color-bg:        #f5f5f5;   /* light grey page background */
+  --color-header:    #1a1a2e;   /* dark navy header */
+  --color-accent:    #e94560;   /* coral accent for links and highlights */
+  --color-card-bg:   #ffffff;   /* white card backgrounds */
+  --color-text:      #333333;   /* dark grey body text */
+  --color-muted:     #666666;   /* lighter grey for secondary text */
+  --border-radius:   6px;
+  --max-width:       800px;     /* maximum content width — keeps lines readable */
+}
+
+/* ── Element selector: body ────────────────────────────────────────────────── */
+/* Applied to the entire page. Sets default font, colour, and background. */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* ── Element selector: h2 ──────────────────────────────────────────────────── */
+/* All section headings share this style */
+h2 {
+  border-bottom: 2px solid var(--color-accent);
+  padding-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Class selector: .site-header ─────────────────────────────────────────── */
+/* Dark header bar stretching the full page width */
+.site-header {
+  background-color: var(--color-header);  /* dark background */
+  color: #ffffff;                          /* white text */
+  padding: 2rem 1rem;                      /* box model: space inside the element */
+}
+
+/* ── Class selector: .header-content ──────────────────────────────────────── */
+/* Inner wrapper: centres content and caps the width */
+.header-content {
+  max-width: var(--max-width);   /* never wider than 800px */
+  margin: 0 auto;                /* auto left/right margin = horizontally centred */
+}
+
+.site-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2rem;
+}
+
+.tagline {
+  margin: 0 0 1rem;
+  color: #cccccc;   /* slightly dimmed so h1 stands out more */
+}
+
+/* ── Descendant selector: .main-nav ul ─────────────────────────────────────── */
+/* Targets <ul> elements that are *inside* .main-nav — not every <ul> on the page */
+.main-nav ul {
+  list-style: none;   /* remove bullet points */
+  margin: 0;
+  padding: 0;
+  display: flex;      /* lay items out in a row */
+  gap: 1.5rem;        /* space between items */
+  flex-wrap: wrap;    /* wrap to next line on narrow screens */
+}
+
+/* ── Descendant selector: .main-nav a ──────────────────────────────────────── */
+/* Styles navigation links specifically — not all <a> tags */
+.main-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  /* transition: smoothly animates the background change on hover */
+  transition: background-color 0.2s ease;
+}
+
+/* Pseudo-class :hover — applied when the user's cursor is over the element */
+.main-nav a:hover {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* ── Class selector: .content-wrapper ─────────────────────────────────────── */
+/* Centres the main content and adds comfortable spacing */
+.content-wrapper {
+  max-width: var(--max-width);
+  margin: 2rem auto;   /* 2rem top/bottom, auto left/right = centred */
+  padding: 0 1rem;     /* horizontal padding so text doesn't touch screen edges */
+}
+
+/* ── Class selector: .project-grid ────────────────────────────────────────── */
+/* Flexbox card grid — children (.project-card) sit side-by-side */
+.project-grid {
+  display: flex;       /* enable flexbox on this container */
+  flex-wrap: wrap;     /* let cards wrap to the next row when there isn't space */
+  gap: 1.25rem;        /* space between cards */
+}
+
+/* ── Class selector: .project-card ────────────────────────────────────────── */
+/* Individual project card — demonstrates the CSS box model */
+.project-card {
+  background-color: var(--color-card-bg);
+
+  /* Box model layers (outside-in):
+       margin  → space OUTSIDE the border (pushes other elements away) — set via .project-grid gap
+       border  → visible line around the element
+       padding → space INSIDE the border (between border and content)
+       content → the text/images inside */
+  border: 1px solid #dddddd;
+  border-radius: var(--border-radius);
+  padding: 1.25rem;        /* inner breathing room */
+
+  /* flex: 1 1 220px means:
+       flex-grow: 1   — take up available space
+       flex-shrink: 1 — shrink if needed
+       flex-basis: 220px — start at 220px wide */
+  flex: 1 1 220px;
+  max-width: 100%;
+
+  /* Subtle shadow to lift the card off the page */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  /* Smooth lift animation on hover */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-3px);                      /* lift up by 3px */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);      /* stronger shadow */
+}
+
+.project-card h3 {
+  margin-top: 0;
+  color: var(--color-header);
+}
+
+/* ── Class selector: .project-module ──────────────────────────────────────── */
+.project-module {
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Class selector: .site-footer ─────────────────────────────────────────── */
+.site-footer {
+  background-color: var(--color-header);
+  color: #aaaaaa;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+}
+
+/* ── Element selector: a (global link style) ───────────────────────────────── */
+a {
+  color: var(--color-accent);
+}
+
+a:hover {
+  text-decoration: underline;
+}
