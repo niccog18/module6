@@ -2,7 +2,7 @@
 L10 — Data Explorer  (STARTER)
 ================================
 Run with:
-    streamlit run solution.py
+    streamlit run starter.py
 
 Your goal: build a Streamlit app that fetches and explores user data
 from JSONPlaceholder.

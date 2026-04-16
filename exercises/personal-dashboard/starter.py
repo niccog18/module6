@@ -2,7 +2,7 @@
 L8 — Personal Stats Dashboard  (STARTER)
 ==========================================
 Run with:
-    streamlit run solution.py
+    streamlit run starter.py
 
 Your goal: build a wide-layout dashboard with sidebar controls,
 metrics, tabs, and an expander.

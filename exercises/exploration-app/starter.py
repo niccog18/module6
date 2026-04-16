@@ -2,7 +2,7 @@
 L7 — Streamlit Exploration App  (STARTER)
 ===========================================
 Run with:
-    streamlit run solution.py
+    streamlit run starter.py
 
 Your goal: build an interactive app called "Python Learning Journey" that
 uses 5+ widget types and shows content that changes based on widget values.
