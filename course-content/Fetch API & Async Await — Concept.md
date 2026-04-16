@@ -1,0 +1,151 @@
+# Fetch API & Async/Await — Concept
+
+**Module 6 — Web Essentials & Streamlit**
+
+**Estimated time: 35 minutes**
+
+---
+
+### Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+1. Explain why network requests need to be asynchronous (non-blocking)
+2. Use the `fetch()` function with `async/await` to request data from an API
+3. Identify the critical `response.ok` gotcha and implement proper error handling
+4. Update the DOM dynamically with data received from an API
+
+---
+
+`[VIDEO PLACEHOLDER: 7 min — "Fetch API in action: make live API calls from the browser, show the loading/response cycle, demonstrate the response.ok gotcha with a 404 that doesn’t throw an error."]`
+
+Imagine you’re at a restaurant and you order food. You have two options for how to spend your waiting time:
+
+**Option A (blocking):** You stand at the kitchen counter staring at the cooks until your food is ready. You can’t sit down, can’t talk to anyone, can’t check your phone. You just… wait.
+
+**Option B (non-blocking):** You place your order, sit down at your table, chat with friends, check your phone, and when the food is ready, a waiter brings it to you.
+
+Network requests in JavaScript work like Option B. When your webpage asks a server for data, it doesn’t freeze the entire page while waiting for the response. Instead, it sends the request, continues running other code (keeping the page interactive), and handles the response *when it arrives*.
+
+This is **asynchronous programming**, and it’s essential for web applications. Without it, every time you loaded data from an API, the entire page would freeze until the response came back. Imagine Google Maps freezing for 2 seconds every time it loaded a new tile of the map. Unacceptable.
+
+---
+
+## The `fetch()` Function
+
+`fetch()` is JavaScript’s built-in way to make HTTP requests. It’s what the browser uses behind the scenes when you call an API:
+
+```jsx
+fetch("https://jsonplaceholder.typicode.com/posts/1")
+```
+
+But there’s a catch: `fetch()` returns a **Promise** — an object that represents a value that will arrive *in the future*. You can’t use the result immediately because it hasn’t arrived yet.
+
+---
+
+## `async/await`: Making Promises Readable
+
+Promises can be handled with `.then()` chains, but modern JavaScript uses `async/await` — a cleaner syntax that reads almost like synchronous code:
+
+```jsx
+async function getPost() {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+    const data = await response.json();  // Parse the JSON body
+    console.log(data.title);
+}
+```
+
+Two key words:
+
+- **`async`** before the function declaration: "This function contains asynchronous operations."
+- **`await`** before a Promise: "Pause here and wait for this to finish before continuing."
+
+Notice there are **two `await`s**. The first waits for the server to respond. The second waits for the response body to be parsed as JSON. These are two separate operations — the response arrives as a stream, and converting it to a usable JavaScript object takes additional time.
+
+---
+
+## The Critical `response.ok` Gotcha
+
+Here’s something that trips up almost every developer the first time:
+
+**`fetch()` does NOT throw an error for 404 or 500 status codes.**
+
+If you request a URL that doesn’t exist and get a 404 back, `fetch()` considers that a *successful* network request — the server responded, after all. It only throws an error if the network itself fails (server unreachable, DNS failure, etc.).
+
+This means you **must** check `response.ok` yourself:
+
+```jsx
+async function getPost(id) {
+    const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+
+    if (!response.ok) {
+        // The server responded, but with an error status (404, 500, etc.)
+        console.error(`Error: ${response.status} ${response.statusText}`);
+        return null;
+    }
+
+    const data = await response.json();
+    return data;
+}
+```
+
+`response.ok` is `true` for status codes 200–299, and `false` for everything else. This is one of the most common sources of bugs in web applications — code that assumes a `fetch()` that doesn’t throw is successful.
+
+---
+
+## Sending Data with POST
+
+GET requests fetch data. POST requests *send* data:
+
+```jsx
+async function createPost(title, body) {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+        method: "POST",                              // HTTP method
+        headers: { "Content-Type": "application/json" }, // Tell server we're sending JSON
+        body: JSON.stringify({ title, body, userId: 1 }) // Convert JS object to JSON string
+    });
+
+    if (!response.ok) {
+        console.error("Failed to create post");
+        return null;
+    }
+
+    const data = await response.json();
+    return data;  // The server returns the created object with an ID
+}
+```
+
+This is the same as the POST requests you made with Python’s `requests.post()` in Module 4 — and the same as what hits your FastAPI endpoints. The only difference is the syntax.
+
+---
+
+## Error Handling with `try/catch/finally`
+
+JavaScript’s equivalent of Python’s `try/except/finally`:
+
+```jsx
+async function loadData() {
+    try {
+        const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        // Network errors OR the error we threw above
+        console.error("Failed to load data:", error.message);
+    } finally {
+        // Runs no matter what — success or failure
+        console.log("Request complete.");
+    }
+}
+```
+
+The `finally` block is perfect for cleaning up — hiding a loading spinner, re-enabling a button, or resetting a state flag — regardless of whether the request succeeded or failed.
+
+---
+
+## Why This Matters for AI Applications
+
+Every AI-powered web interface follows this exact pattern: the user types a question, the frontend sends a `fetch()` POST request to the backend, the backend processes the request (maybe queries a vector database, maybe calls an LLM), and the response comes back for the frontend to display.
+
+In Week 2, Streamlit will handle the `fetch()` calls for you. But understanding what’s happening underneath means you can debug issues, understand error messages, and build more robust applications.
