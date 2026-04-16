@@ -13,12 +13,12 @@ A Python script that calls the PokeAPI to retrieve Pokemon data. You will implem
 
 ## Reference Code
 
-The solution file (`solution.py`) is provided as a reference — try building it yourself first, then compare.
+The starter file (`starter.py`) provides a scaffold with TODOs — fill in each section, then compare with the solution.
 
 ## Running
 
 ```bash
-python solution.py
+python starter.py
 ```
 
 ## Deliverable

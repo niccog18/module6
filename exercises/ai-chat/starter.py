@@ -2,7 +2,7 @@
 L12 — AI Chat Interface  (STARTER)
 =====================================
 Run with:
-    streamlit run solution.py
+    streamlit run starter.py
 
 Your goal: build a Streamlit chat interface with streaming responses.
 

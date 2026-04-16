@@ -2,7 +2,7 @@
 L9 — Stateful Quiz App  (STARTER)
 ===================================
 Run with:
-    streamlit run solution.py
+    streamlit run starter.py
 
 Your goal: build a 5-question multiple-choice quiz app that tracks state
 across re-runs using st.session_state.

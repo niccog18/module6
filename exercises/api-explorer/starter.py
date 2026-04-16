@@ -10,7 +10,7 @@ Key concepts you will use:
 - response.json()         : parses the JSON response body into a Python dict
 
 Run this file when you are done:
-    python solution.py
+    python starter.py
 
 Steps to complete:
   1. Fill in fetch_pokemon() to call the PokeAPI.

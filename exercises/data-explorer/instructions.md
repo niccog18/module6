@@ -13,12 +13,12 @@ A data exploration dashboard that fetches users from JSONPlaceholder and present
 
 ## Reference Code
 
-The solution file (`solution.py`) is provided as a reference — try building it yourself first, then compare.
+The starter file (`starter.py`) provides a scaffold with TODOs — fill in each section, then compare with the solution.
 
 ## Running
 
 ```bash
-streamlit run solution.py
+streamlit run starter.py
 ```
 
 ## Deliverable
