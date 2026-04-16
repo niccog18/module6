@@ -106,7 +106,7 @@ uvicorn backend:app --reload --port 8000   # in one terminal
 streamlit run app.py                        # in another terminal
 ```
 
-See the project brief on the course platform for full requirements.
+See the project README in `project/starter/` for full requirements, grading rubric, and presentation guidelines.
 
 ---
 
