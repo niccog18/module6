@@ -38,9 +38,9 @@ cd module-06-web-essentials-streamlit
 
 | App type | Command |
 |----------|---------|
-| Streamlit app | `streamlit run solution.py` |
+| Streamlit app | `streamlit run starter.py` |
 | FastAPI backend | `uvicorn mini_api:app --reload --port 8000` |
-| Plain Python script | `python solution.py` |
+| Plain Python script | `python starter.py` |
 | HTML file | Open in any browser (double-click or `open file.html`) |
 
 > **Note for mini-dashboard and streamlit-fastapi exercises:** start the FastAPI
