@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Profile</title>  <!-- This text shows in the browser tab -->
+    <link rel="stylesheet" href="portfolio-styles.css">
+</head>
+<body>
+    <header>
+        <h1>Nicco Gonzalez</h1>
+        <p>Aspiring AI Engineer</p>
+
+        <nav>  <!-- Navigation section -->
+            <a href="#about">About</a> |
+            <a href="#projects">Projects</a> |
+            <a href="#skills">Skills</a> |
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+<main>
+    <!-- About Section -->
+    <section id="about">  <!-- id="about" lets the nav link jump here -->
+        <h2>About Me</h2>
+        <p>I'm a career changer transitioning into AI engineering. Previously, I worked in the fitness industry for almost 8 years before switching into the insurance industry, both of which helped me developed strong problem-solving and communication skills. Now I'm building the technical foundation to create AI-powered applications.</p>
+        <p>Currently working through the <strong>AI Engineering Foundations</strong> program at Coding Temple, where I've already built Python applications, designed databases with SQLAlchemy, and created REST APIs with FastAPI.</p>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <h2>Projects</h2>
+        <div class="project-grid">  <!-- Add this wrapper -->
+
+            <article>
+                <h3>Grade Tracker API</h3>
+                <p>
+                Developed a RESTful API using FastAPI and SQLAlchemy to manage student records, grades, and enrollment information. Implemented full CRUD functionality, input validation with Pydantic, and automated testing with Pytest.
+                </p>
+            </article>
+
+            <article>
+                <h3>Data Pipeline Automation</h3>
+                <p>
+                Built a Python data pipeline that retrieves, processes, and
+                organizes data from external sources. Used file handling,
+                structured data processing, and automation techniques to create
+                a reliable workflow for transforming raw data into usable
+                information.
+                </p>
+            </article>
+
+            <article>
+                <h3>Task Manager API</h3>
+                <p>
+                Created a secure task management API with FastAPI featuring JWT
+                authentication, user-specific task management, priority filtering,
+                background task logging, and an AI-ready task suggestion endpoint.
+                Designed using SQLAlchemy, Pydantic, and RESTful best practices.
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <h2>Skills</h2>
+        <ul>  <!-- Unordered list for skills -->
+            <li>Python (pandas, matplotlib, requests)</li>
+            <li>SQL & SQLAlchemy ORM</li>
+            <li>FastAPI & REST API Design</li>
+            <li>Git & GitHub</li>
+            <li>Testing with pytest</li>
+            <li>HTML5</li>
+        </ul>
+    </section>
+</main>
+<footer id="contact">
+        <h2>Contact</h2>
+        <p>Email: <a href="mailto:niccog18@gmail.com">niccog18@gmail.com</a></p>
+        <p>GitHub: <a href="https://github.com/niccog18>" target="_blank">github.com/niccog18</a></p>
+        <p>&copy; 2026 Nicco Gonzalez. All rights reserved.</p>  <!-- &copy; displays the © symbol -->
+</footer>
+</body>
+</html>
