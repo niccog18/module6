@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Developer Profile</title>  <!-- This text shows in the browser tab -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
@@ -27,7 +28,8 @@
 
     <!-- Projects Section -->
     <section id="projects">
-        <h2>Projects</h2>
+    <h2>Projects</h2>
+    <div class="project-grid">  <!-- Add this wrapper -->
 
         <article>  <!-- Each project is a self-contained article -->
             <h3>Student Grade Tracker</h3>
@@ -43,6 +45,7 @@
             <h3>AI-Ready Task Manager API</h3>
             <p>A FastAPI backend with JWT authentication, full CRUD operations, SQLAlchemy database integration, and automated testing with pytest.</p>
         </article>
+    </div>
     </section>
 
     <!-- Skills Section -->
