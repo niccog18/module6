@@ -109,3 +109,11 @@ footer a {
 footer a:hover {
     text-decoration: underline;  /* Underline on hover */
 }
+
+/* --- Responsive Design --- */
+/* This CSS only applies when the screen is 600px or narrower */
+@media (max-width: 600px) {
+    .project-grid {
+        flex-direction: column;  /* Stack cards vertically instead of in a row */
+    }
+}
