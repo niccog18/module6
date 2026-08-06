@@ -105,9 +105,18 @@
             progress.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
         }
 
+        // Toggle the answer visibility
+function toggleAnswer() {
+    if (answer.style.display === "none") {
+        answer.style.display = "block";
+    } else {
+        answer.style.display = "none";
+    }
+}
+
         // Show the answer
         showAnswerButton.addEventListener("click", function () {
-            answer.style.display = "block";
+            toggleAnswer();
         });
 
         // Move to the next flashcard
@@ -118,6 +127,29 @@
 
         // Display the first card when the page loads
         displayCard();
+
+        // Keyboard navigation
+document.addEventListener("keydown", function (event) {
+
+    // Right Arrow = Next Card
+    if (event.key === "ArrowRight") {
+        currentIndex = (currentIndex + 1) % cards.length;
+        displayCard();
+    }
+
+    // Left Arrow = Previous Card
+    else if (event.key === "ArrowLeft") {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        displayCard();
+    }
+
+    // Space Bar = Show/Hide Answer
+    else if (event.key === " ") {
+        event.preventDefault(); // Prevent page scrolling
+        toggleAnswer();
+    }
+
+});
     </script>
 
 </body>
