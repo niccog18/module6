@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini API Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,.1);
+        }
+
+        #stats {
+            display: flex;
+            justify-content: space-around;
+            font-weight: bold;
+        }
+
+        #task-list {
+            margin-top: 10px;
+        }
+
+        .task {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        input {
+            padding: 8px;
+            width: 70%;
+        }
+
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        #timestamp {
+            color: gray;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        #error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mini API Dashboard</h1>
+
+    <div class="card">
+        <h2>Task Statistics</h2>
+
+        <div id="stats">
+            <div>Total: <span id="total">0</span></div>
+            <div>Done: <span id="done">0</span></div>
+            <div>Pending: <span id="pending">0</span></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Add Task</h2>
+
+        <input
+            type="text"
+            id="task-input"
+            placeholder="Enter a new task"
+        >
+
+        <button id="add-btn">Add Task</button>
+
+        <p id="error"></p>
+    </div>
+
+    <div class="card">
+        <h2>Tasks</h2>
+
+        <button id="refresh-btn">Refresh</button>
+
+        <div id="task-list"></div>
+
+        <p id="timestamp"></p>
+    </div>
+
+<script>
+const API = "http://localhost:8000";
+
+const totalEl = document.querySelector("#total");
+const doneEl = document.querySelector("#done");
+const pendingEl = document.querySelector("#pending");
+
+const taskList = document.querySelector("#task-list");
+const taskInput = document.querySelector("#task-input");
+const addBtn = document.querySelector("#add-btn");
+const refreshBtn = document.querySelector("#refresh-btn");
+const timestamp = document.querySelector("#timestamp");
+const error = document.querySelector("#error");
+
+
+// Load task statistics
+async function loadStats() {
+    try {
+        const response = await fetch(`${API}/stats`);
+
+        if (!response.ok) {
+            throw new Error("Failed to load stats");
+        }
+
+        const stats = await response.json();
+
+        totalEl.textContent = stats.total;
+        doneEl.textContent = stats.done;
+        pendingEl.textContent = stats.pending;
+
+    } catch (err) {
+        error.textContent = err.message;
+    }
+}
+
+
+// Load all tasks
+async function loadTasks() {
+    try {
+        const response = await fetch(`${API}/tasks`);
+
+        if (!response.ok) {
+            throw new Error("Failed to load tasks");
+        }
+
+        const tasks = await response.json();
+
+        taskList.innerHTML = "";
+
+        tasks.forEach(task => {
+            const div = document.createElement("div");
+            div.className = "task";
+
+            div.textContent =
+                `${task.title} - ${task.done ? "✅ Done" : "⏳ Pending"}`;
+
+            taskList.appendChild(div);
+        });
+
+    } catch (err) {
+        error.textContent = err.message;
+    }
+}
+
+
+// Add a new task
+async function addTask() {
+
+    const title = taskInput.value.trim();
+
+    if (!title) {
+        error.textContent = "Please enter a task.";
+        return;
+    }
+
+    error.textContent = "";
+
+    try {
+        const response = await fetch(`${API}/tasks`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: title
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to add task");
+        }
+
+        taskInput.value = "";
+
+        refreshAll();
+
+    } catch (err) {
+        error.textContent = err.message;
+    }
+}
+
+
+// Refresh everything
+function refreshAll() {
+    loadTasks();
+    loadStats();
+
+    timestamp.textContent =
+        `Last updated: ${new Date().toLocaleTimeString()}`;
+}
+
+
+// Event listeners
+addBtn.addEventListener("click", addTask);
+refreshBtn.addEventListener("click", refreshAll);
+
+// Initial load
+refreshAll();
+
+</script>
+
+</body>
+</html>
