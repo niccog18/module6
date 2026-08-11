@@ -1,0 +1,102 @@
+Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+    Use st.columns() to create multi-column layouts with equal and unequal widths
+    Organize controls in the sidebar using st.sidebar
+    Structure content with tabs, expanders, and containers
+    Apply layout best practices: sidebar for controls, main area for content, metrics row at the top
+
+In the last lesson, you learned that Streamlit renders content top-to-bottom - each st.write() or widget appears below the previous one. That works for simple apps, but real dashboards need structure: controls on the side, metrics across the top, content organized into sections.
+
+Think of it like organizing a physical workspace. You could pile everything on one long table. But a well-organized workspace has drawers for tools (sidebar), a quick-reference board at eye level (metrics), and labeled folders for different projects (tabs). Same content, dramatically better experience.
+
+Streamlit has built-in layout components that give you this structure with minimal code.
+Page Configuration
+
+Before any content, set the page configuration:
+st.set_page_config(
+    page_title="My Dashboard",      # Browser tab title
+    page_icon="📊",                 # Browser tab icon
+    layout="wide",                  # Use full browser width (default is "centered")
+    initial_sidebar_state="expanded" # Sidebar starts open
+)
+
+This must be the first Streamlit command in your script (after imports). If you call it after any other st. function, you’ll get an error.
+Columns: Side-by-Side Content
+
+st.columns() creates horizontal columns. Each column is an independent container:
+# Equal-width columns
+col1, col2, col3 = st.columns(3)  # 3 equal columns
+
+with col1:
+    st.metric("Users", "1,234", "+12%")
+with col2:
+    st.metric("Revenue", "$45,678", "+8%")
+with col3:
+    st.metric("Tasks", "89", "-3")
+
+You can also create unequal columns by passing a list of ratios:
+left, right = st.columns([2, 1])  # Left is 2x wider than right
+
+The st.metric() component is built for dashboard KPIs - it shows a label, a value, and an optional delta (change indicator) with automatic green/red coloring.
+Sidebar: Controls on the Side
+
+The sidebar is perfect for filters, settings, and navigation. Use the st.sidebar prefix:
+# Sidebar content
+st.sidebar.title("Controls")
+date_range = st.sidebar.selectbox("Time Period", ["Today", "This Week", "This Month"])
+show_chart = st.sidebar.checkbox("Show chart", value=True)
+
+Or use the with syntax:
+with st.sidebar:
+    st.title("Controls")
+    category = st.selectbox("Category", ["All", "Sales", "Marketing"])
+
+Best practice: put controls (filters, inputs, settings) in the sidebar, and content (charts, tables, data) in the main area. This matches the pattern users expect from dashboards.
+Tabs: Organized Sections
+
+Tabs let users switch between different views without scrolling:
+tab1, tab2, tab3 = st.tabs(["Overview", "Details", "Raw Data"])
+
+with tab1:
+    st.write("High-level summary goes here")
+with tab2:
+    st.write("Detailed breakdown goes here")
+with tab3:
+    st.write("Raw data table goes here")
+
+Only one tab is visible at a time. Switching tabs triggers a re-run (like everything else in Streamlit).
+Expanders: Show/Hide Content
+
+Expanders collapse content behind a clickable header:
+with st.expander("Advanced Settings"):
+    threshold = st.slider("Threshold", 0.0, 1.0, 0.5)
+    st.write("These settings are hidden by default to keep the UI clean.")
+
+Expanders are great for optional information, detailed explanations, or settings that most users don’t need to see.
+Containers
+
+st.container() creates a logical grouping that you can write to out of order:
+placeholder = st.container()
+
+# This runs later but appears ABOVE the content below
+placeholder.write("This appears at the top!")
+
+st.write("This appears at the bottom")
+
+Containers are useful when you want to reserve a spot in the layout and fill it later (e.g., showing a result above the form that generated it).
+Layout Best Practices
+
+Here’s the standard dashboard pattern you’ll use for the module project and beyond:
+┌───────────────┬───────────────────────────────────────┐
+│  SIDEBAR      │  METRICS ROW (st.columns + st.metric) │
+│               ├───────────────────────────────────────┤
+│  Filters      │  TABS (Overview | Details | Raw Data) │
+│  Controls     │                                       │
+│  Settings     │  Main content area                    │
+│               │  (charts, tables, forms)              │
+└───────────────┴───────────────────────────────────────┘
+
+
+This pattern is used by virtually every analytics dashboard, admin panel, and AI tool interface. Learn it once, use it everywhere.
