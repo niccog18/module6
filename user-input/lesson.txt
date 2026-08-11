@@ -1,0 +1,113 @@
+Learning Objectives
+
+By the end of this lesson, you will be able to:
+
+    Explain why regular Python variables don’t persist across Streamlit re-runs
+    Use st.session_state to store and update persistent data
+    Use st.form() to batch multiple inputs and prevent unnecessary re-runs
+    Build multi-step interactive flows using session state
+
+Here’s the scenario that confuses every new Streamlit developer. You write this code, expecting a counter that goes up each time you click:
+import streamlit as st
+
+count = 0
+if st.button("Add one"):
+    count += 1
+st.write(f"Count: {count}")
+
+You click the button. The count shows 1. You click again. The count… still shows 1. Or sometimes 0. It never reaches 2.
+
+Why? Because of the re-run model. Every time you click the button, the entire script re-runs from the top. Line 3 (count = 0) executes again, resetting your counter to zero before the button logic can increment it.
+
+This isn’t a bug. It’s the fundamental consequence of Streamlit’s design. And the solution is st.session_state.
+image (5).png
+st.session_state: Memory That Survives Re-Runs
+
+st.session_state is a dictionary that persists across re-runs. It’s like a notebook that Streamlit keeps next to your script - the script can read from it and write to it, and the values stay even when the script re-runs.
+
+Here’s the counter, fixed:
+import streamlit as st
+
+# Initialize ONCE — only runs when the key doesn't exist yet
+if "count" not in st.session_state:
+    st.session_state["count"] = 0
+
+if st.button("Add one"):
+    st.session_state["count"] += 1   # Modify the persistent value
+
+st.write(f"Count: {st.session_state['count']}")
+
+Now click the button multiple times. The count goes 1, 2, 3, 4… correctly. The initialization check (if "count" not in st.session_state) ensures we only set the initial value once, on the very first run. Every subsequent re-run skips that line because the key already exists.
+
+This initialization pattern is the most important pattern in Streamlit:
+if "key" not in st.session_state:
+    st.session_state["key"] = initial_value
+
+You’ll use it for everything: login tokens, form data, chat history, quiz scores, navigation state.
+st.form(): Batching Inputs to Prevent Re-Run Overload
+
+Imagine a form with 5 fields. Without st.form(), every time the user changes ANY field, the script re-runs. Filling out 5 fields triggers 5+ re-runs before they even submit.
+
+If each re-run triggers an API call, that’s 5 unnecessary API calls. For expensive operations (AI model calls, database queries), this is wasteful or even rate-limit-triggering.
+
+st.form() solves this by batching inputs:
+with st.form("task_form", clear_on_submit=True):
+    title = st.text_input("Task title")
+    priority = st.selectbox("Priority", ["Low", "Medium", "High"])
+    description = st.text_area("Description")
+
+    submitted = st.form_submit_button("Add Task")
+
+    if submitted:
+        # This only runs when the submit button is clicked
+        st.session_state["tasks"].append({
+            "title": title,
+            "priority": priority,
+            "description": description
+        })
+
+Inside a form, widget interactions do NOT trigger re-runs. Only the submit button does. The clear_on_submit=True option resets all fields after submission - perfect for "add item" forms.
+Key Input Widgets Reference
+
+Streamlit has widgets for every common input type:
+
+Text: st.text_input(), st.text_area(), st.number_input()
+
+Selection: st.selectbox(), st.multiselect(), st.radio(), st.checkbox()
+
+Range: st.slider(), st.select_slider()
+
+Date/Time: st.date_input(), st.time_input()
+
+Files: st.file_uploader()
+
+Actions: st.button(), st.form_submit_button()
+
+Every widget returns its current value. Inside a form, values are captured when submitted.
+Building Multi-Step Flows
+
+Session state enables multi-step experiences. Here’s the pattern for a quiz-style flow:
+if "step" not in st.session_state:
+    st.session_state["step"] = 1
+
+if st.session_state["step"] == 1:
+    st.write("Step 1: Enter your name")
+    name = st.text_input("Name")
+    if st.button("Next") and name:
+        st.session_state["name"] = name
+        st.session_state["step"] = 2
+        st.rerun()  # Force an immediate re-run to show step 2
+
+elif st.session_state["step"] == 2:
+    st.write(f"Welcome, {st.session_state['name']}!")
+    st.write("Step 2: Choose your settings")
+    # ... more content ...
+
+st.rerun() forces an immediate re-run, which is useful when you change state and want the UI to reflect it without waiting for the user to interact with something.
+Common Pitfalls
+
+Pitfall 1: Forgetting initialization. If you read st.session_state["count"] before it exists, you’ll get a KeyError. Always initialize first.
+
+Pitfall 2: Using st.button() for persistent actions. st.button() returns True only during the re-run when it’s clicked. On the next re-run, it’s False again. So code inside if st.button(...) only runs for one run. For persistent changes, store the result in session state.
+
+Pitfall 3: Duplicate widget keys. If you create two widgets with the same label inside a loop, Streamlit can’t tell them apart. Use the key parameter to give each a unique identifier: st.button("Delete", key=f"delete_{item_id}")
