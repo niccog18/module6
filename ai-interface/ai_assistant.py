@@ -31,14 +31,15 @@ def mock_response(prompt, system_prompt, contexts):
     )
 
     # The system prompt is included as part of the AI's context.
-    # This mock does not generate a real AI response, but it demonstrates
-    # how the prompt would be passed to an AI API in a real application.
+    # This mock demonstrates how the prompt would be passed
+    # to an AI API in a real application.
     if system_prompt:
         response += (
-            f" Your customized system instructions are also being "
-            f"considered."
+            " Your customized system instructions are also being "
+            "considered."
         )
 
+    # Stream the response word-by-word
     for word in response.split():
         yield word + " "
         time.sleep(0.03)
@@ -110,10 +111,56 @@ with st.sidebar:
 
     st.divider()
 
-    # Clear chat button
+    # -----------------------------------------------------
+    # Clear Chat button
+    # -----------------------------------------------------
+
     if st.button("Clear Chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
+
+    # -----------------------------------------------------
+    # Conversation Export
+    # -----------------------------------------------------
+
+    if st.button("📋 Copy Conversation", use_container_width=True):
+
+        if st.session_state["messages"]:
+
+            export_text = ""
+
+            for msg in st.session_state["messages"]:
+
+                role = (
+                    "You"
+                    if msg["role"] == "user"
+                    else "AI"
+                )
+
+                export_text += (
+                    f"{role}: {msg['content']}\n\n"
+                )
+
+            st.code(
+                export_text,
+                language=None
+            )
+
+            st.caption(
+                "Select all the text above and copy it "
+                "(Cmd/Ctrl + C)"
+            )
+
+            # Bonus: Download conversation as a text file
+            st.download_button(
+                "💾 Download Chat",
+                data=export_text,
+                file_name="chat_export.txt",
+                mime="text/plain"
+            )
+
+        else:
+            st.info("No messages to export yet.")
 
 
 # ---------------------------------------------------------
@@ -167,4 +214,3 @@ if prompt:
             "content": response
         }
     )
-
